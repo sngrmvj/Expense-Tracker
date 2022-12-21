@@ -16,6 +16,12 @@ public interface ExpenseRepository extends JpaRepository<MonthlyExpenses,Integer
     @Query(value = "SELECT left_over_amount FROM monthly_expenses where created_date=(SELECT max(created_date) FROM monthly_expenses)", nativeQuery = true)
     public double findtheLastMonthlyExpense();
 
+    @Query(value="SELECT password FROM users WHERE email_id=:email", nativeQuery = true)
+    public String findUserByEmail(@Param("email") String emailId);
+
+    @Query(value = "select * from monthly_expenses me where email_id=:email",nativeQuery = true)
+    public List<MonthlyExpenses> getAllExpensesOfUser(@Param("email") String emailId);
+
 }
 
 

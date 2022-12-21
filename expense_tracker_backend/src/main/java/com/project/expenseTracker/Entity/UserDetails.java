@@ -4,6 +4,8 @@ package com.project.expenseTracker.Entity;
 
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
+
+import java.sql.Timestamp;
 import java.time.Instant;
 
 @Entity
@@ -18,10 +20,7 @@ public class UserDetails {
     private String firstName;
     private String lastName;
     private String password;
-    private double salaryAmount;
-
-    @CreatedDate
-    private Instant userCreatedDate;
+    private Timestamp createdDate;
 
 
     public void setEmailId(String email){
@@ -36,14 +35,17 @@ public class UserDetails {
     public void setPassword(String password){
         this.password = password;
     }
-    public void setSalaryAmount(double amount){
-        this.salaryAmount = amount;
+    public void setCreatedDate(Timestamp time) {
+        this.createdDate = time;
     }
+//    public void setSalaryAmount(double amount){
+//        this.salaryAmount = amount;
+//    }
 
 
-    public double getSalaryAmount(){
-        return this.salaryAmount;
-    }
+//    public double getSalaryAmount(){
+//        return this.salaryAmount;
+//    }
     public String getEmailId(){
         return this.emailId;
     }
@@ -53,10 +55,10 @@ public class UserDetails {
     public String getLastName(){
         return this.lastName;
     }
-    public Instant getCreatedDate(){
-        return this.userCreatedDate;
-    }
     public Integer getId(){
         return  this.id;
+    }
+    public Timestamp getCreatedDate(){
+        return this.createdDate;
     }
 }

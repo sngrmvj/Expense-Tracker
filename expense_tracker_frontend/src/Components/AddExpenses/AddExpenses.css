@@ -2,7 +2,7 @@
 
 
 
-.login_div{
+.addExpense_div{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -11,7 +11,7 @@
     align-items:center;
 }
 
-.login_div input {
+.addExpense_div input {
     font-size: 16px;
     border: 0;
     border-bottom: 1px solid #ccc;
@@ -22,12 +22,12 @@
     cursor: text;
 }
 
-.login_div input:focus {
+.addExpense_div input:focus {
     outline: 0;
     border-bottom: 1px solid #046FAA;
 }
 
-.login_div label {
+.addExpense_div label {
     font-size: 15px;
     color: #046FAA;
     font-family: Arial, Helvetica, sans-serif;
@@ -41,7 +41,7 @@
     border-left: 2px solid #046FAA;
 }
 
-.login_div .btn {
+.addExpense_div .btn {
     background: none;
     border: none;
     cursor: pointer;
@@ -56,7 +56,7 @@
     border: 2px solid #046FAA;
 }
 
-.login_div .btn:hover { 
+.addExpense_div .btn:hover { 
     /* outline: 2px dotted #55d7dc;  */
     border: 2px solid #046FAA;
     background-color: transparent;

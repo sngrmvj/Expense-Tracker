@@ -1,64 +1,37 @@
-
-
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './SignUp.css';
+import { LOCAL_URL } from '../../constants';
+import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
-import {toast} from 'react-toastify';
+import './SignUp.css';
+import 'react-toastify/dist/ReactToastify.css';
 
-toast.configure()
+
 const RegisterScreen = () =>{
 
     const navigate = useNavigate();
     var data = {};
-    const [phonetype,setPhoneType] = useState('');
-    const [share_flag,setShareFlag] = useState(false);
+
+    useEffect(() => {
+        if(localStorage.getItem('isLoggedIn')){
+            navigate("/viewExpenses")
+        }
+    }, []);
 
     const navigateToLogin = () => {
         navigate("/");
     }
 
-    const phoneTypeSelection = (event) =>{
-        setPhoneType(event.target.value);
-    }
-
-    const isPhoneShareable = (event) =>{
-        setShareFlag(event.target.checked);
-    }
-
     const handleSubmit = (event) =>{
         event.preventDefault();
 
-
-        if(event.target.phone.value){
-
-            data = {
-                useremail: event.target.useremail.value,
-                nick_name: event.target.nickname.value,
-                password: event.target.password.value,
-                city: event.target.city.value,
-                first_name: event.target.firstname.value,
-                state: event.target.state.value,
-                last_name: event.target.lastname.value,
-                postalcode: event.target.postalcode.value,
-                password: event.target.password.value,
-                phonenumber: event.target.phone.value,
-                phone_type: phonetype,
-                share_flag: share_flag,
-            }
-        } else{
-            data = {
-                useremail: event.target.useremail.value,
-                nick_name: event.target.nickname.value,
-                password: event.target.password.value,
-                city: event.target.city.value,
-                first_name: event.target.firstname.value,
-                state: event.target.state.value,
-                last_name: event.target.lastname.value,
-                postalcode: event.target.postalcode.value,
-                password: event.target.password.value,
-            }
+        data = {
+            emailId: event.target.useremail.value,
+            password: event.target.password.value,
+            firstName: event.target.firstname.value,
+            lastName: event.target.lastname.value,
         }
+
         const options = {
             withCredentials: true,
             credentials: 'same-origin', 
@@ -71,19 +44,17 @@ const RegisterScreen = () =>{
             },
 
             data : data
-
         };
-
-        axios.post("http://127.0.0.1:5000/gameswap/register/", options)
+        
+        axios.post(`${LOCAL_URL}/register`, options)
         .then(result=>{
-
-            if (result.data['flag'] === 409){
+            if (result.status === 409){
                 toast.error(result.data['error'])
             }
-            else if (result.data['flag'] === 404){
+            else if (result.status === 404){
                 toast.error(result.data['error'])
             }
-            else if (result.data['flag'] === 500){
+            else if (result.status === 500){
                 toast.error(result.data['error'])
             }
             else{
@@ -101,7 +72,7 @@ const RegisterScreen = () =>{
             <div className="App">
                 <div className='navigation_bar'>
                     <ul>
-                        <li> <span style={{fontSize:"25px",color:"#046FAA", marginRight:"20px"}}><b>GameSwap</b></span></li>
+                        <li> <span style={{fontSize:"25px",color:"#046FAA", marginRight:"20px"}}><b>Expense Tracker</b></span></li>
                     </ul>
                 </div>
             </div>
@@ -119,59 +90,28 @@ const RegisterScreen = () =>{
                                 <input type="email" name="useremail" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"/>
                             </div>
                             <div style={{display:"flex",flexDirection:"column",marginLeft:"20px"}}>
-                                <label htmlFor='nick'>Nickname</label>
-                                <input type="text" name="nickname" required/>
+                                <label htmlFor='password'>Password</label>
+                                <input type="password" name="password" minLength={9} required/>
                             </div>
                         </div><br/> <br/>
 
-                        <div style={{display:"flex",flexDirection:"row"}}>
-                            <div style={{display:"flex",flexDirection:"column"}}>
-                                <label htmlFor='password'>Password</label>
-                                <input type="password" name="password" required/>
-                            </div>
-                            <div style={{display:"flex",flexDirection:"column",marginLeft:"20px"}}>
-                                <label htmlFor='city'>City</label>
-                                <input type="text" name="city" required/>
-                            </div>
-                        </div><br/><br/>
                         <div style={{display:"flex",flexDirection:"row"}}>
                             <div style={{display:"flex",flexDirection:"column"}}>
                                 <label htmlFor='firstname'>Firstname</label>
                                 <input type="text" name="firstname" required/>
                             </div>
                             <div style={{display:"flex",flexDirection:"column",marginLeft:"20px"}}>
-                                <label htmlFor='state'>State</label>
-                                <input type="text" name="state" required/>
-                            </div>
-                        </div><br/><br/>
-                        <div style={{display:"flex",flexDirection:"row"}}>
-                            <div style={{display:"flex",flexDirection:"column"}}>
                                 <label htmlFor='lastname'>Lastname</label>
                                 <input type="text" name='lastname' required/>
                             </div>
-                            <div style={{display:"flex",flexDirection:"column",marginLeft:"20px"}}>
-                                <label htmlFor='postalcode'>Postalcode</label>
-                                <input type="text" name="postalcode" required />
-                            </div>
-                        </div><br/><br/><br/>
-                        <div style={{display:"flex",flexDirection:"row"}}>
+                        </div><br/><br/>
+
+                        {/* <div style={{display:"flex",flexDirection:"row"}}>
                             <div style={{display:"flex",flexDirection:"column"}}>
-                                <label htmlFor='lastname'>Phone number (optional)</label>
-                                <input type="text" name="phone" pattern="([0-9]{10})|([0-9]{3}-[0-9]{3}-[0-9]{4})" />
+                                <label htmlFor='lastname'>Initial Salary</label>
+                                <input type="number" name="salary" />
                             </div>
-                            <div style={{display:"flex",flexDirection:"row",width:"300px",marginLeft:"20px"}}>
-                                <select style={{width:"300px",cursor:"pointer"}} onChange={phoneTypeSelection}>
-                                    <option value="null">Select phone type</option>
-                                    <option value="Home">Home</option>
-                                    <option value="Work">Work</option>
-                                    <option value="Mobile">Mobile</option>
-                                </select>
-                            </div>
-                        </div> <br/>
-                        <div style={{display:"flex",flexDirection:"row"}}>
-                            <input type="checkbox" id="topping" name="topping" checked={share_flag} onChange={isPhoneShareable} style={{cursor:"pointer"}} />
-                            <span>Show phone number is swaps</span>
-                        </div><br/>
+                        </div> <br/> */}
                         <div>
                             <button type="submit" className="btn" >Register</button>
                             <button type="reset" className="btn" style={{marginLeft:"20px"}}>Reset</button> <br/><br/><br/>
@@ -183,6 +123,8 @@ const RegisterScreen = () =>{
                     </form>
                 </div>
             </div>
+
+            <ToastContainer />
         </div>
     );
 }

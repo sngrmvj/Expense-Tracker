@@ -20,6 +20,7 @@ public class MonthlyExpenses {
     private double leftOverAmount;
     private String type;
     private Timestamp createdDate;
+    private String emailId;
 
 
 
@@ -39,6 +40,9 @@ public class MonthlyExpenses {
     public void setPriceOfExpense(double amount) { this.priceOfExpense = amount; }
     public void setCreatedDate(Timestamp time) {
         this.createdDate = time;
+    }
+    public void setEmailId(String emailId){
+        this.emailId = emailId;
     }
 
 
@@ -62,5 +66,8 @@ public class MonthlyExpenses {
     }
     public Integer getId(){
         return  this.id;
+    }
+    public String getEmailId() {
+        return  this.emailId;
     }
 }

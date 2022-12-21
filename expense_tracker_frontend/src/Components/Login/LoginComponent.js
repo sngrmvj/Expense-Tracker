@@ -3,19 +3,25 @@
 
 
 import './LoginComponent.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import login from '../../assets/login.png';
 import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import axios from 'axios';
-import {toast} from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { LOCAL_URL } from '../../constants';
 
 
-toast.configure()
+
 const LoginScreen = (props) => {
 
     const navigate = useNavigate();
+    useEffect(() => {
+        if(localStorage.getItem('isLoggedIn')){
+            navigate("/viewExpenses")
+        }
+    }, []);
 
 
     const navigateToRegister = () => {
@@ -50,19 +56,20 @@ const LoginScreen = (props) => {
             },
     
             data : {
-                email: stateEmail,
+                emailId: stateEmail,
                 password: statePassword
             },
         };
         
-        axios.post("http://127.0.0.1:5000/gameswap/login/", options) // if promise get you success, control enters .then
+        axios.put(`${LOCAL_URL}/login`, options) // if promise get you success, control enters .then
         .then(res => {
             // cookies.set('GAMESWAP_ACCESS_TOKEN', res.data['access_token'], { path: '/', expires: new Date(Date.now()+ (3600 * 1000 * 24))});
             
             if (res.status === 200) {
-                localStorage.setItem('GAMESWAP_ACCESS_TOKEN', res.data.access_token);
+                // localStorage.setItem('GAMESWAP_ACCESS_TOKEN', res.data.access_token);
                 localStorage.setItem('isLoggedIn',true);
-                navigate("/mainmenu");
+                localStorage.setItem('email',stateEmail);
+                navigate("/viewExpenses");
             }
         })
         .catch(error => {
@@ -80,7 +87,7 @@ const LoginScreen = (props) => {
             <div className="App">
                 <div className='navigation_bar'>
                     <ul>
-                        <li> <span style={{fontSize:"25px",color:"#046FAA", marginRight:"20px"}}><b>GameSwap</b></span></li>
+                        <li> <span style={{fontSize:"25px",color:"#046FAA", marginRight:"20px"}}><b>Expense Tracker</b></span></li>
                     </ul>
                 </div>
             </div>
@@ -113,6 +120,8 @@ const LoginScreen = (props) => {
                     </div>
                 </div>
             </div>
+
+            <ToastContainer />
         </div>
 
     );

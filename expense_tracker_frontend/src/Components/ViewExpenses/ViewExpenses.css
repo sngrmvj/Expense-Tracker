@@ -1,0 +1,45 @@
+
+.myitem_div{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+
+.ag-theme-alpine .ag-header{
+    background-color: #046FAA !important;
+}
+
+.ag-theme-alpine .ag-header-cell-text{
+    color: white !important;
+}
+
+.expenses_div{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center;
+    align-items: center; */
+    width: 100%
+    /* padding: 20px; */
+}
+
+
+.left_over_expense{
+    background-color:#046FAA;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border: 1px solid #046FAA;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.display_Left_over_expense{
+    padding: 10px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border: 1px solid #046FAA;
+    font-size: 15px;
+    font-weight: bold;
+}
