@@ -61,8 +61,8 @@ public class MonthlyExpenses {
     public double getPriceOfExpense(){
         return this.priceOfExpense;
     }
-    public Timestamp getCreatedDate(){
-        return this.createdDate;
+    public String getCreatedDate(){
+        return this.createdDate.toString().split(" ")[0];
     }
     public Integer getId(){
         return  this.id;

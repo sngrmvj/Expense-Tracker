@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -46,7 +47,6 @@ public class ExpenseService {
             userRepository.save(user);
             return true;
         } catch (Exception error){
-            System.out.println(error);
             return false;
         }
     }
@@ -54,7 +54,7 @@ public class ExpenseService {
 
 
     public List<MonthlyExpenses> getExpenses(String emailId, String month) throws SQLException {
-        List<MonthlyExpenses> listMonthlyExpenses = expenseRepository.getAllExpensesOfUser(emailId);
+        List<MonthlyExpenses> listMonthlyExpenses = expenseRepository.getAllExpensesOfUser(emailId, Integer.parseInt(month));
         return listMonthlyExpenses;
     }
 
@@ -68,7 +68,6 @@ public class ExpenseService {
     }
 
     public Boolean addExpenses(ObjectNode JSONobject) throws Exception {
-        System.out.println(JSONobject);
         try{
             MonthlyExpenses monthlyExpenses = new MonthlyExpenses();
             monthlyExpenses.setEmailId(JSONobject.get("data").get("emailId").asText());
@@ -96,6 +95,38 @@ public class ExpenseService {
             return true;
         }
     }
+
+    public HashMap<String, HashMap> get3monthDetails(String email){
+        List<Integer> all3months= expenseRepository.get3months(email);
+        HashMap<String, HashMap> result = new HashMap<>();
+        HashMap<Integer, Integer> must_have_list=new HashMap<>();
+        HashMap<Integer, Integer> nice_to_have_list=new HashMap<>();
+        HashMap<Integer, Integer> total_expense_list=new HashMap<>();
+        int i = 0;
+        while (i < all3months.size()){
+            List<Integer> nice_to_have_price= expenseRepository.getDetailsBasedOnType(email,all3months.get(i),"Nice to have");
+            int nice_to_have_price_sum = 0;
+            for (int j: nice_to_have_price) {
+                nice_to_have_price_sum += j;
+            }
+            List<Integer> must_price= expenseRepository.getDetailsBasedOnType(email,all3months.get(i),"Must have");
+            int must_have_price_sum = 0;
+            for (int j: must_price) {
+                must_have_price_sum += j;
+            }
+            Integer total_expense = nice_to_have_price_sum + must_have_price_sum;
+            must_have_list.put(all3months.get(i),must_have_price_sum);
+            nice_to_have_list.put(all3months.get(i),nice_to_have_price_sum);
+            total_expense_list.put(all3months.get(i),total_expense);
+            i += 1;
+        }
+        result.put("Total Expense",total_expense_list);
+        result.put("Must Have",must_have_list);
+        result.put("Nice to have",nice_to_have_list);
+
+        return result;
+    }
+
 
 }
 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -71,6 +72,12 @@ public class ExpenseTrackerController {
     @CrossOrigin(origins = "http://localhost:3000")
     public Boolean deleteTheExpense(@RequestParam("id") Integer identifier) throws Exception{
         return expenseService.deleteExpense(identifier);
+    }
+
+    @GetMapping("/3monthsAnalytics")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public HashMap<String, HashMap> getAnalyticsData(@RequestParam("emailId") String emailId){
+        return expenseService.get3monthDetails(emailId);
     }
 
 

@@ -56,14 +56,7 @@ const ViewExpensesComponent = () => {
 
 
     const ExpenseHeaders = [
-        {
-            headerName: 'Date',field:'createdDate',sortable: true, filter: true,wrapText:true, autoHeight:true,
-            cellRenderer: (params) =>{
-                let date = params.data.createdDate.split("T")[0].split("-");
-                let dateString = `${date[2]} ${monthlyCount[date[1]]} ${date[0]}`
-                return dateString;
-            }
-        },
+        {headerName: 'Date',field:'createdDate',sortable: true, filter: true,wrapText:true, autoHeight:true},
         {headerName: 'Description',field:'category',wrapText:true, autoHeight:true},
         {headerName: 'Expense Type',field:'type',wrapText:true, autoHeight:true },
         {headerName: 'Price',field:'priceOfExpense',wrapText:true, autoHeight:true, width:"150px" },
@@ -221,13 +214,14 @@ const ViewExpensesComponent = () => {
                                 </Accordion.Body>
                             </Accordion.Item>
                         </Accordion>
-                    </div><br/><br/>
+                    </div><br/>
 
                     <div>
                         <div style={{padding:"10px", borderBottom:"2px solid #046FAA"}}>
                             <header style={{fontWeight:"bold"}}>View Expenses</header>
                         </div> 
                         <div style={{padding:"10px"}}>
+                            <p>For further information on how much we spent on each type, please visit our analytics page.</p>
                             <div className="ag-theme-alpine" style={{height: "400px", width:"1250px", }}>
                                 <AgGridReact
                                     style={{borderRadius:"5px"}}
