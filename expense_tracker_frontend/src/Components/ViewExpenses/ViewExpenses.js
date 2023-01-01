@@ -10,6 +10,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import axios from 'axios';
 import './ViewExpenses.css';
 import { LOCAL_URL } from '../../constants';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
@@ -60,8 +62,8 @@ const ViewExpensesComponent = () => {
         {headerName: 'Description',field:'category',wrapText:true, autoHeight:true},
         {headerName: 'Expense Type',field:'type',wrapText:true, autoHeight:true },
         {headerName: 'Price',field:'priceOfExpense',wrapText:true, autoHeight:true, width:"150px" },
-        {headerName: 'Amount before purchase',field:'initialAmount',sortable: true, filter: true, wrapText:true, autoHeight:true  ,wrapHeaderText:true},
-        {headerName: 'Current amount',field:'leftOverAmount',sortable: true, filter: true, wrapText:true, autoHeight:true , wrapHeaderText:true},
+        // {headerName: 'Amount before purchase',field:'initialAmount',sortable: true, filter: true, wrapText:true, autoHeight:true  ,wrapHeaderText:true},
+        // {headerName: 'Current amount',field:'leftOverAmount',sortable: true, filter: true, wrapText:true, autoHeight:true , wrapHeaderText:true},
         {
             headerName: 'Operations',field:'total',
             cellRenderer: (params) =>{
@@ -70,8 +72,20 @@ const ViewExpensesComponent = () => {
         },
     ]; 
     const [allExpenseDetails,setAllExpenseDetails] = useState(ExpenseHeaders);
+    const [allExpenseDetailsForDownload, setExpenseDetailsForDownload] = useState();
+
+    const downloadTxtFile = () => {
+        const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+        const ws = XLSX.utils.json_to_sheet(allExpenseDetailsForDownload);
+        const wb = { Sheets: { 'Expenses': ws }, SheetNames: ['Expenses'] };
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], {type: fileType});
+        FileSaver.saveAs(data, "Expenses_of_current_month.xlsx");
+    }
+    
 
     const deleteExpense = (identifier) => {
+        let personEmailId = localStorage.getItem("email");
         const options = {
             headers: {
                 'Accept': 'application/json',
@@ -80,10 +94,11 @@ const ViewExpensesComponent = () => {
             },
         };
 
-        axios.delete(`${LOCAL_URL}/deleteExpense?id=${identifier}`, options)
+        axios.delete(`${LOCAL_URL}/deleteExpense?id=${identifier}&emailId=${personEmailId}`, options)
         .then(result => {
             if (result.data === true){
                 getAllExpenses();
+                getLeftOverExpense();
                 toast.success("Your expense is successfully deleted");
             } else {
                 toast.error("Your expense not deleted.");
@@ -96,6 +111,7 @@ const ViewExpensesComponent = () => {
 
 
     const getLeftOverExpense = () => {
+        let personEmailId = localStorage.getItem("email");
         const options = {
             headers: {
                 'Accept': 'application/json',
@@ -104,8 +120,11 @@ const ViewExpensesComponent = () => {
             },
         };
 
-        axios.get(`${LOCAL_URL}/leftOver/`, options)
+        axios.get(`${LOCAL_URL}/leftOver?emailId=${personEmailId}`, options)
         .then(result => {
+            if (result.data === null){
+                result.data = 0.0;
+            }
             if (result.data === 0.0 || result.data === 0){
                 setCurrentSalary(
                     <label style={{fontWeight:"bold", color:"blue"}}>{result.data}</label>
@@ -144,6 +163,19 @@ const ViewExpensesComponent = () => {
         .then(result => {
             if(result){
                 setAllExpenseDetails(result.data);
+                let excelResult = []
+                result.data.forEach(element => {
+                    let tempData = {}
+                    tempData["Category"] = element['category']
+                    tempData["Price of Expense"] = element['priceOfExpense']
+                    tempData["Before Amount"] = element['initialAmount']
+                    tempData["After Amount"] = element['leftOverAmount']
+                    tempData["Type"] = element['type']
+                    tempData["Created Date"] = element['createdDate']
+
+                    excelResult.push(tempData);
+                });
+                setExpenseDetailsForDownload(excelResult);
             }
         }).catch(error => {
             console.log(error)
@@ -162,9 +194,29 @@ const ViewExpensesComponent = () => {
         
         getAllExpenses();
         getLeftOverExpense();
+        getUser();
     }, []);
 
+    const [userFirstName, setUserFirstName] = useState("");
+    const [userLastName, setUserLastName] = useState("");
+    const getUser = () =>{
+        const options = {
+            headers: {
+                'Accept': 'application/json',
+                "Access-Control-Allow-Origin": "*",
+                'Content-Type': 'application/json',
+            },
+        };
 
+        let personEmailId = localStorage.getItem("email");
+        axios.get(`${LOCAL_URL}/getUserName?emailId=${personEmailId}`, options)
+        .then(result => {
+            setUserFirstName(result.data.firstname);
+            setUserLastName(result.data.lastname);
+        }).catch(error => {
+            console.log(error)
+        })
+    }
 
 
 
@@ -173,12 +225,13 @@ const ViewExpensesComponent = () => {
             <div className="App">
                 <div className='navigation_bar'>
                     <ul>
-                        <li> <span style={{fontSize:"20px",color:"#046FAA", marginRight:"18px"}}><b>Expense Tracker</b></span></li>
-                        <li style={{color:"#046FAA"}}><label>View Expense</label></li>
-                        <li style={{color:"#046FAA",cursor:"pointer"}} onClick={navigateToAddExpense}><label>Add Expense</label></li>
+                        <li> <span style={{fontSize:"20px",color:"#046FAA", marginRight:"18px"}}><b>Expense Tracker</b> <br/> <span style={{fontSize:"12px",padding:"0px",color:"#046FAA"}}>({userFirstName} {userLastName})</span></span></li>
+                        <li style={{color:"#046FAA",cursor:"auto"}} ><label>View Expense</label></li>
+                        <li style={{color:"#046FAA"}} onClick={navigateToAddExpense}><label>Add Expense</label></li>
                         <li style={{color:"#046FAA",cursor:"pointer"}} onClick={navigateToAnalytics}><label>Analytics</label></li>
-                        {/* <li> <span style={{fontSize:"25px",color:"#046FAA", marginRight:"20px",cursor:"pointer"}} onClick={navigateToMainmenu}> <b>Expense Tracker</b></span></li> */}
+                        
                         <li style={{float:"right", color:"#046FAA"}} onClick={logout}><label>Logout</label></li>
+                        <li style={{float:"right", cursor:"auto"}}><label></label></li>
                     </ul>
                 </div>
             </div>
@@ -208,7 +261,7 @@ const ViewExpensesComponent = () => {
                                     <label style={{marginLeft:"10px",fontSize:"15px"}}>6. Exercises</label><br/>
                                     <label style={{marginLeft:"10px",fontSize:"15px"}}>7. Build a legacy</label><br/><br/>
                                     {
-                                        currentSalaryValue > 5000 ? <span>{niceToHaveExpenseBody}</span> : <span></span>
+                                        currentSalaryValue >= 5000 ? <span>{niceToHaveExpenseBody}</span> : <span><label style={{color:"salmon"}}><b>Your monthly allowance of nice-to-have items has been used up.</b></label></span>
                                     }
 
                                 </Accordion.Body>
@@ -220,9 +273,13 @@ const ViewExpensesComponent = () => {
                         <div style={{padding:"10px", borderBottom:"2px solid #046FAA"}}>
                             <header style={{fontWeight:"bold"}}>View Expenses</header>
                         </div> 
-                        <div style={{padding:"10px"}}>
-                            <p>For further information on how much we spent on each type, please visit our analytics page.</p>
-                            <div className="ag-theme-alpine" style={{height: "400px", width:"1250px", }}>
+                        <div style={{padding:"10px", alignItems:"center", display:"flex", flexDirection:"column"}}>
+                            <div style={{display:"flex", flexDirection:"row", alignItems:"center", marginLeft:"-187px"}}>
+                                <button onClick={downloadTxtFile} className="printBtn">Print Expenses</button>
+                                <label style={{marginLeft:"20px", fontWeight:"bold", fontSize:"12px"}}>For further information on how much we spent on each type, please visit our analytics page.</label>
+                            </div>
+
+                            <div className="ag-theme-alpine" style={{height: "400px", width:"903px"}}>
                                 <AgGridReact
                                     style={{borderRadius:"5px"}}
                                     rowData={allExpenseDetails}

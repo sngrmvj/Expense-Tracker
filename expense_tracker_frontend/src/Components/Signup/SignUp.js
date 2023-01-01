@@ -13,7 +13,7 @@ const RegisterScreen = () =>{
     var data = {};
 
     useEffect(() => {
-        if(localStorage.getItem('isLoggedIn')){
+        if(localStorage.getItem('isLoggedIn') === false){
             navigate("/viewExpenses")
         }
     }, []);

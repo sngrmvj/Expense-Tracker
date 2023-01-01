@@ -6,19 +6,24 @@ package com.project.expenseTracker.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.project.expenseTracker.Entity.MonthlyExpenses;
+import com.project.expenseTracker.Response.FirstAndLastNameResponse;
 import com.project.expenseTracker.Service.ExpenseService;
+import com.project.expenseTracker.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class ExpenseTrackerController {
 
     @Autowired
     public ExpenseService expenseService;
+    @Autowired
+    public UserService userService;
     @Autowired
     public ObjectMapper mapper;
 
@@ -31,8 +36,7 @@ public class ExpenseTrackerController {
     @PutMapping("/login")
     @CrossOrigin(origins = "http://localhost:3000")
     public ObjectNode loginIntoApplication(@RequestBody ObjectNode JSONobject){
-        System.out.println(JSONobject);
-        Boolean flag = expenseService.isUser(JSONobject.get("data").get("emailId").asText(),JSONobject.get("data").get("password").asText());
+        Boolean flag = userService.isUser(JSONobject.get("data").get("emailId").asText(),JSONobject.get("data").get("password").asText());
         ObjectNode objectNode = mapper.createObjectNode();
         objectNode.put("emailId", JSONobject.get("data").get("emailId").asText());
         objectNode.put("flag", flag);
@@ -42,7 +46,13 @@ public class ExpenseTrackerController {
     @PostMapping("/register")
     @CrossOrigin(origins = "http://localhost:3000")
     public Boolean registerUserIntoApplication(@RequestBody ObjectNode JSONobject) throws Exception{
-        return expenseService.addUser(JSONobject);
+        return userService.addUser(JSONobject);
+    }
+
+    @GetMapping("/getUserName")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public FirstAndLastNameResponse getUsersFirstAndLastName(@RequestParam("emailId") String emailId) throws Exception{
+        return userService.getUserName(emailId);
     }
 
 
@@ -56,10 +66,10 @@ public class ExpenseTrackerController {
         return monthlyExpenses;
     }
 
-    @GetMapping("/leftOver/")
+    @GetMapping("/leftOver")
     @CrossOrigin(origins = "http://localhost:3000")
-    public double getLeftOverMoney() throws Exception {
-        return expenseService.getLeftOverMoney();
+    public Optional<Double> getLeftOverMoney(@RequestParam("emailId") String emailId) throws Exception {
+        return userService.getLeftOverMoney(emailId);
     }
 
     @PostMapping("/addExpense/")
@@ -70,13 +80,13 @@ public class ExpenseTrackerController {
 
     @DeleteMapping("/deleteExpense")
     @CrossOrigin(origins = "http://localhost:3000")
-    public Boolean deleteTheExpense(@RequestParam("id") Integer identifier) throws Exception{
-        return expenseService.deleteExpense(identifier);
+    public Boolean deleteTheExpense(@RequestParam("id") Integer identifier, @RequestParam("emailId") String emailId) throws Exception{
+        return expenseService.deleteExpense(identifier, emailId);
     }
 
     @GetMapping("/3monthsAnalytics")
     @CrossOrigin(origins = "http://localhost:3000")
-    public HashMap<String, HashMap> getAnalyticsData(@RequestParam("emailId") String emailId){
+    public HashMap<String, List> getAnalyticsData(@RequestParam("emailId") String emailId){
         return expenseService.get3monthDetails(emailId);
     }
 

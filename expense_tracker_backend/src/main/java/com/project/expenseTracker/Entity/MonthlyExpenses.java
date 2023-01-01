@@ -11,7 +11,15 @@ import java.time.Instant;
 public class MonthlyExpenses {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+            name= "Monthly_Expenses_Sequence",
+            sequenceName = "Monthly_Expenses_Sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "Monthly_Expenses_Sequence"
+    )
     private int id;
 
     private double initialAmount;

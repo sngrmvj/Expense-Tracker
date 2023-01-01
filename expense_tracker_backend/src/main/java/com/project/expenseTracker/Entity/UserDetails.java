@@ -13,7 +13,15 @@ import java.time.Instant;
 public class UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+            name= "userDetails_Sequence",
+            sequenceName = "userDetails_Sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "userDetails_Sequence"
+    )
     private int id;
 
     private String emailId;
@@ -21,6 +29,8 @@ public class UserDetails {
     private String lastName;
     private String password;
     private Timestamp createdDate;
+    @Column(name = "current_monthly_expense", nullable = true)
+    private double currentMonthlyExpense;
 
 
     public void setEmailId(String email){
@@ -38,14 +48,14 @@ public class UserDetails {
     public void setCreatedDate(Timestamp time) {
         this.createdDate = time;
     }
-//    public void setSalaryAmount(double amount){
-//        this.salaryAmount = amount;
-//    }
+    public void setCurrentMonthlyExpense(double amount){
+        this.currentMonthlyExpense = amount;
+    }
 
 
-//    public double getSalaryAmount(){
-//        return this.salaryAmount;
-//    }
+    public double getCurrentMonthlyExpense(){
+        return this.currentMonthlyExpense;
+    }
     public String getEmailId(){
         return this.emailId;
     }

@@ -73,7 +73,7 @@ const AnalyticsComponent  = () => {
         },
     };
 
-    const labels = ['Oct','Nov','Dec'];
+    const [labels, setLabels] = useState("");
     const data = {
         labels,
         datasets: [
@@ -99,6 +99,7 @@ const AnalyticsComponent  = () => {
     };
 
     useEffect(() => {
+        getUser(); // To get the user firstname and lastname
         let personEmailId = localStorage.getItem("email");
         const options = {
             headers: {
@@ -109,19 +110,32 @@ const AnalyticsComponent  = () => {
         };
         axios.get(`${LOCAL_URL}/3monthsAnalytics?emailId=${personEmailId}`, options)
         .then(result => {
+            console.log(result);
+            let tempLabels = []
+            for(let key in result.data["Total Expense"]){
+                let temp = result.data["Total Expense"][key];
+                tempLabels.push(monthlyCount[temp[0]])
+            }
+            setLabels(tempLabels);
+
             let totalExpense = {}
             for(let key in result.data["Total Expense"]){
-                totalExpense[monthlyCount[key]] = result.data["Total Expense"][key]
+                let temp = result.data["Total Expense"][key];
+                totalExpense[monthlyCount[temp[0]]] = temp[1]
             }
             setExpenseDetails(totalExpense);
+
             let must_have_expense = {}
             for(let key in result.data["Must Have"]){
-                must_have_expense[monthlyCount[key]] = result.data["Must Have"][key]
+                let temp = result.data["Must Have"][key];
+                must_have_expense[monthlyCount[temp[0]]] = temp[1]
             }
             setMustHaveDetails(must_have_expense);
+
             let nice_to_have_expense = {}
             for(let key in result.data["Nice to have"]){
-                nice_to_have_expense[monthlyCount[key]] = result.data["Nice to have"][key]
+                let temp = result.data["Nice to have"][key];
+                nice_to_have_expense[monthlyCount[temp[0]]] = temp[1]
             }
             setNiceToHaveDetails(nice_to_have_expense);
         }).catch(error => {
@@ -129,16 +143,39 @@ const AnalyticsComponent  = () => {
         })
     }, []);
 
+    const [userFirstName, setUserFirstName] = useState("");
+    const [userLastName, setUserLastName] = useState("");
+    const getUser = () =>{
+        const options = {
+            headers: {
+                'Accept': 'application/json',
+                "Access-Control-Allow-Origin": "*",
+                'Content-Type': 'application/json',
+            },
+        };
+
+        let personEmailId = localStorage.getItem("email");
+        axios.get(`${LOCAL_URL}/getUserName?emailId=${personEmailId}`, options)
+        .then(result => {
+            setUserFirstName(result.data.firstname);
+            setUserLastName(result.data.lastname);
+        }).catch(error => {
+            console.log(error)
+        })
+    }
+
     return (
         <div>
             <div className="App">
                 <div className='navigation_bar'>
-                    <ul>
-                        <li> <span style={{fontSize:"20px",color:"#046FAA", marginRight:"18px"}}><b>Expense Tracker</b></span></li>
-                        <li style={{color:"#046FAA",cursor:"pointer"}} onClick={navigateToviewExpense}><label>View Expense</label></li>
+                <ul>
+                        <li> <span style={{fontSize:"20px",color:"#046FAA", marginRight:"18px"}}><b>Expense Tracker</b> <br/> <span style={{fontSize:"12px",padding:"0px",color:"#046FAA"}}>({userFirstName} {userLastName})</span></span></li>
+                        <li style={{color:"#046FAA",cursor:"pointer"}}  onClick={navigateToviewExpense} ><label>View Expense</label></li>
                         <li style={{color:"#046FAA",cursor:"pointer"}} onClick={navigateToAddExpense}><label>Add Expense</label></li>
-                        <li style={{color:"#046FAA"}} ><label>Analytics</label></li>
+                        <li style={{color:"#046FAA"}}><label>Analytics</label></li>
+                        
                         <li style={{float:"right", color:"#046FAA"}} onClick={logout}><label>Logout</label></li>
+                        <li style={{float:"right", cursor:"auto"}}><label></label></li>
                     </ul>
                 </div>
             </div>

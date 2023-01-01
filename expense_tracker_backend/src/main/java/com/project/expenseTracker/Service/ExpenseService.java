@@ -8,14 +8,12 @@ import com.project.expenseTracker.Entity.MonthlyExpenses;
 import com.project.expenseTracker.Entity.UserDetails;
 import com.project.expenseTracker.Repository.ExpenseRepository;
 import com.project.expenseTracker.Repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -23,34 +21,9 @@ public class ExpenseService {
 
     @Autowired
     public ExpenseRepository expenseRepository;
+
     @Autowired
-    public UserRepository userRepository;
-
-
-    public Boolean isUser(String emailId, String recivedPassword){
-        String retrievedPassword = expenseRepository.findUserByEmail(emailId);
-        if (retrievedPassword == recivedPassword){
-            return true;
-        }
-        return false;
-    }
-
-    public Boolean addUser(ObjectNode JSONobject) throws Exception{
-        try{
-            UserDetails user = new UserDetails();
-            user.setEmailId(JSONobject.get("data").get("emailId").asText());
-            user.setFirstName(JSONobject.get("data").get("firstName").asText());
-            user.setLastName(JSONobject.get("data").get("lastName").asText());
-            user.setPassword(JSONobject.get("data").get("password").asText());
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            user.setCreatedDate(timestamp);
-            userRepository.save(user);
-            return true;
-        } catch (Exception error){
-            return false;
-        }
-    }
-
+    public UserService userService;
 
 
     public List<MonthlyExpenses> getExpenses(String emailId, String month) throws SQLException {
@@ -58,14 +31,7 @@ public class ExpenseService {
         return listMonthlyExpenses;
     }
 
-    public double getLeftOverMoney() throws Exception{
-        try {
-            return expenseRepository.findtheLastMonthlyExpense();
-        } catch (Exception error){
-            System.out.println(error);
-            return 0.0;
-        }
-    }
+
 
     public Boolean addExpenses(ObjectNode JSONobject) throws Exception {
         try{
@@ -79,6 +45,9 @@ public class ExpenseService {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             monthlyExpenses.setCreatedDate(timestamp);
             expenseRepository.save(monthlyExpenses);
+
+            // Idea is to update the balance of the User current Monthly Expense once a new expense is added
+            userService.updateLeftOverAmountOfUser(JSONobject.get("data").get("emailId").asText(),JSONobject.get("data").get("leftOverAmount").asDouble());
             return true;
         } catch (Exception error){
             System.out.println(error);
@@ -86,22 +55,32 @@ public class ExpenseService {
         }
     }
 
-    public Boolean deleteExpense(Integer id){
-        expenseRepository.deleteById(id);
+    public Boolean deleteExpense(Integer id, String emailId) throws Exception{
+        // If there is no data in the viewExpense it is taking the previous month ... But it should show the current month as 0
         try{
-            MonthlyExpenses monthlyExpenses = expenseRepository.getReferenceById(id);
-            return false; // The idea is it should throw exception. If it doesn't that represents the id is not deleted.
-        } catch (EntityNotFoundException error){
+            Boolean isAvailable = expenseRepository.existsById(id);
+            if(!isAvailable){
+                throw  new IllegalStateException("Expense with id - "+id+" does not exist");
+            }
+            Double priceOfProduct = expenseRepository.getPriceOfProductToBeDeleted(id);
+            Optional<Double> leftOverCurrentMonthlyExpense = userService.getLeftOverMoney(emailId);
+            priceOfProduct += leftOverCurrentMonthlyExpense.orElse(0.0);
+            expenseRepository.deleteById(id);
+            userService.updateLeftOverAmountOfUser(emailId,priceOfProduct);
             return true;
+        } catch (Exception error){
+            System.out.println(error);
+            return false;
         }
     }
 
-    public HashMap<String, HashMap> get3monthDetails(String email){
+    public HashMap<String, List> get3monthDetails(String email){
         List<Integer> all3months= expenseRepository.get3months(email);
-        HashMap<String, HashMap> result = new HashMap<>();
-        HashMap<Integer, Integer> must_have_list=new HashMap<>();
-        HashMap<Integer, Integer> nice_to_have_list=new HashMap<>();
-        HashMap<Integer, Integer> total_expense_list=new HashMap<>();
+        HashMap<String, List> result = new HashMap<>();
+        List<List<Integer>> nice_to_have_list = new ArrayList<>();
+        List<List<Integer>> must_have_list = new ArrayList<>();
+        List<List<Integer>> total_expense_list = new ArrayList<>();
+
         int i = 0;
         while (i < all3months.size()){
             List<Integer> nice_to_have_price= expenseRepository.getDetailsBasedOnType(email,all3months.get(i),"Nice to have");
@@ -115,9 +94,9 @@ public class ExpenseService {
                 must_have_price_sum += j;
             }
             Integer total_expense = nice_to_have_price_sum + must_have_price_sum;
-            must_have_list.put(all3months.get(i),must_have_price_sum);
-            nice_to_have_list.put(all3months.get(i),nice_to_have_price_sum);
-            total_expense_list.put(all3months.get(i),total_expense);
+            must_have_list.add(List.of(all3months.get(i),must_have_price_sum));
+            nice_to_have_list.add(List.of(all3months.get(i),nice_to_have_price_sum));
+            total_expense_list.add(List.of(all3months.get(i),total_expense));
             i += 1;
         }
         result.put("Total Expense",total_expense_list);

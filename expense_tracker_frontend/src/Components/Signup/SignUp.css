@@ -90,7 +90,7 @@
     border: 0;
     border-bottom: 1px solid #ccc;
     width: 300px;
-    -webkit-appearance: none;
+    /* -webkit-appearance: none; */
     border-radius: 0;
     padding-bottom: 5px;
     cursor: text;
@@ -100,7 +100,7 @@
     border: 0;
     border-bottom: 1px solid #ccc;
     width: 300px;
-    -webkit-appearance: none;
+    /* -webkit-appearance: none; */
     border-radius: 0;
     padding-bottom: 5px;
     cursor: text;
@@ -110,7 +110,7 @@
     border: 0;
     border-bottom: 1px solid #ccc;
     width: 300px;
-    -webkit-appearance: none;
+    /* -webkit-appearance: none; */
     border-radius: 0;
     padding-bottom: 5px;
     cursor: text;
@@ -121,7 +121,7 @@
     border: 0;
     border-bottom: 1px solid #ccc;
     width: 300px;
-    -webkit-appearance: none;
+    /* -webkit-appearance: none; */
     border-radius: 0;
     padding-bottom: 5px;
     cursor: text;

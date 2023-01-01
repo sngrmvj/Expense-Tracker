@@ -16,7 +16,6 @@
     border: 0;
     border-bottom: 1px solid #ccc;
     width: 300px;
-    -webkit-appearance: none;
     border-radius: 0;
     padding-bottom: 5px;
     cursor: text;
@@ -84,6 +83,16 @@
     border: 2px solid #046FAA;
     background-color: transparent;
     color:black
+}
+
+.addExpense_div input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.addExpense_div input[type="checkbox"]::before {
+    color: #046FAA;
 }
 
 

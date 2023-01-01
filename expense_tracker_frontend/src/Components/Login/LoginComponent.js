@@ -18,7 +18,7 @@ const LoginScreen = (props) => {
 
     const navigate = useNavigate();
     useEffect(() => {
-        if(localStorage.getItem('isLoggedIn')){
+        if(localStorage.getItem('isLoggedIn') === false){
             navigate("/viewExpenses")
         }
     }, []);
