@@ -235,28 +235,10 @@ const AddExpensesComponent = () => {
                                 }
                             </div> <br/>
 
-                            <div style={{display:"flex",flexDirection:"row"}}>
-                                {
-                                    currentSalary != 0 ? 
-                                    <div >
-                                        <input type="checkbox" onChange={() => setChecked(!checked)} checked={checked} />
-                                        <label htmlFor="vehicle1" style={{marginLeft:"10px"}}>Edit Expense</label> <br/>
-                                    </div> : <span></span>
-                                }
-                            </div>
-
                             <div>
                                 {
-                                    checked === true ?
-                                    <div style={{display:"flex",flexDirection:"column"}}>
-                                        <label htmlFor="monthly_expense">Enter Monthly Expense (first expense)</label>
-                                        <input type="number" id="monthly_expense" name="monthly_expense" autoComplete="off" required autoFocus /><br/><br/>
-                                    </div>  : <span></span>
-                                }
-
-                                {
                                     // If the start of the month or the current amount is less than 0 
-                                    todayDate === '01' && currentSalary === 0 ? 
+                                    todayDate === '01' || currentSalary === 0 ? 
                                     <div style={{display:"flex",flexDirection:"column"}}>
                                         <label htmlFor="monthly_expense">Enter Monthly Expense (first expense)</label>
                                         <input type="number" id="monthly_expense" name="monthly_expense" autoComplete="off" required autoFocus /><br/><br/>

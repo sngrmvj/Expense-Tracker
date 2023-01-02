@@ -60,7 +60,7 @@ const ViewExpensesComponent = () => {
     const ExpenseHeaders = [
         {headerName: 'Date',field:'createdDate',sortable: true, filter: true,wrapText:true, autoHeight:true},
         {headerName: 'Description',field:'category',wrapText:true, autoHeight:true},
-        {headerName: 'Expense Type',field:'type',wrapText:true, autoHeight:true },
+        {headerName: 'Expense Type',field:'type',wrapText:true, autoHeight:true, filter: true },
         {headerName: 'Price',field:'priceOfExpense',wrapText:true, autoHeight:true, width:"150px" },
         // {headerName: 'Amount before purchase',field:'initialAmount',sortable: true, filter: true, wrapText:true, autoHeight:true  ,wrapHeaderText:true},
         // {headerName: 'Current amount',field:'leftOverAmount',sortable: true, filter: true, wrapText:true, autoHeight:true , wrapHeaderText:true},
@@ -84,6 +84,7 @@ const ViewExpensesComponent = () => {
     }
     
 
+    // Need to check this .....
     const deleteExpense = (identifier) => {
         let personEmailId = localStorage.getItem("email");
         const options = {
@@ -108,7 +109,6 @@ const ViewExpensesComponent = () => {
             console.log(error)
         })
     }
-
 
     const getLeftOverExpense = () => {
         let personEmailId = localStorage.getItem("email");
@@ -145,12 +145,9 @@ const ViewExpensesComponent = () => {
         })
     }
 
-
-    const getAllExpenses = () =>{
+    const getAllExpenses = (month) =>{
         let personEmailId = localStorage.getItem("email");
-        const d = new Date();
-        let month = d.getMonth() + 1;
-        
+
         const options = {
             headers: {
                 'Accept': 'application/json',
@@ -191,10 +188,13 @@ const ViewExpensesComponent = () => {
                 <label style={{fontWeight:"bold"}}>0</label>
             );
         } 
-        
-        getAllExpenses();
-        getLeftOverExpense();
+        const d = new Date();
+        let month = d.getMonth() + 1;
+
         getUser();
+        getAllExpenses(month);
+        getLeftOverExpense();
+        resetBudget(month);
     }, []);
 
     const [userFirstName, setUserFirstName] = useState("");
@@ -218,7 +218,23 @@ const ViewExpensesComponent = () => {
         })
     }
 
+    const resetBudget = (month) =>{
+        const options = {
+            headers: {
+                'Accept': 'application/json',
+                "Access-Control-Allow-Origin": "*",
+                'Content-Type': 'application/json',
+            },
+        };
 
+        let personEmailId = localStorage.getItem("email");
+        axios.get(`${LOCAL_URL}/resetBudget?emailId=${personEmailId}&monthNumber=${month}`, options)
+        .then(result => {
+            console.log(result);
+        }).catch(error => {
+            console.log(error)
+        })
+    }
 
     return(
         <div>

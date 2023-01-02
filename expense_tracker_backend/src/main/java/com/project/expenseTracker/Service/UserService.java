@@ -53,7 +53,24 @@ public class UserService {
     }
 
     public void updateLeftOverAmountOfUser(String emailId, Double leftOverAmount){
-        userRepository.updateBalance(emailId, leftOverAmount);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        userRepository.updateBalance(emailId, leftOverAmount, timestamp);
+    }
+
+    public Boolean resetTheBudget(String emailId, String month) throws Exception{
+        Optional<Integer> retrievedMonth = userRepository.getExpenseUpdatedDate(emailId);
+        if (!retrievedMonth.isEmpty()){
+            if (retrievedMonth.orElse(0) != Integer.parseInt(month)){
+                userRepository.resettingTheBudget(emailId);
+                Optional<Double> leftOverAmount = getLeftOverMoney(emailId);
+                System.out.println(leftOverAmount);
+                if (leftOverAmount.orElse(0.0) != 0.0){
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 }

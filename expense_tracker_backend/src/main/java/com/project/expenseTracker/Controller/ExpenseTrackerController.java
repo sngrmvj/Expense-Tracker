@@ -55,6 +55,12 @@ public class ExpenseTrackerController {
         return userService.getUserName(emailId);
     }
 
+    @GetMapping("/resetBudget")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public Boolean resetCurrentBudget(@RequestParam("emailId") String emailId, @RequestParam("monthNumber") String month) throws Exception{
+        return userService.resetTheBudget(emailId, month);
+    }
+
 
 
 
@@ -89,6 +95,8 @@ public class ExpenseTrackerController {
     public HashMap<String, List> getAnalyticsData(@RequestParam("emailId") String emailId){
         return expenseService.get3monthDetails(emailId);
     }
+
+
 
 
 }

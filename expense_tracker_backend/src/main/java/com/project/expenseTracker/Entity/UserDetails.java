@@ -31,6 +31,7 @@ public class UserDetails {
     private Timestamp createdDate;
     @Column(name = "current_monthly_expense", nullable = true)
     private double currentMonthlyExpense;
+    private Timestamp expenseUpdatedDate;
 
 
     public void setEmailId(String email){
@@ -51,6 +52,9 @@ public class UserDetails {
     public void setCurrentMonthlyExpense(double amount){
         this.currentMonthlyExpense = amount;
     }
+    public void setExpenseUpdatedDate(Timestamp date) {
+        this.expenseUpdatedDate = date;
+    }
 
 
     public double getCurrentMonthlyExpense(){
@@ -70,5 +74,8 @@ public class UserDetails {
     }
     public Timestamp getCreatedDate(){
         return this.createdDate;
+    }
+    public Timestamp getExpenseUpdatedDate() {
+        return this.expenseUpdatedDate;
     }
 }

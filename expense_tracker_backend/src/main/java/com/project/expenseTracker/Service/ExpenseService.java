@@ -5,9 +5,7 @@ package com.project.expenseTracker.Service;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.project.expenseTracker.Entity.MonthlyExpenses;
-import com.project.expenseTracker.Entity.UserDetails;
 import com.project.expenseTracker.Repository.ExpenseRepository;
-import com.project.expenseTracker.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +28,6 @@ public class ExpenseService {
         List<MonthlyExpenses> listMonthlyExpenses = expenseRepository.getAllExpensesOfUser(emailId, Integer.parseInt(month));
         return listMonthlyExpenses;
     }
-
-
 
     public Boolean addExpenses(ObjectNode JSONobject) throws Exception {
         try{
