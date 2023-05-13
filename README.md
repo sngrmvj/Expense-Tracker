@@ -1,6 +1,10 @@
 # ExpenseTracker
+The application's concept is to track a person's monthly spending. This application has enough intelligence to advise you to quit spending money on "nice-to-have" items.
 
-To create a web app where we can have track of expenses of the current month
+### Components
+- Backend
+- Frontend
+- Database
 
 ### Steps to build a java project
 1. If you see a “target” folder delete it
