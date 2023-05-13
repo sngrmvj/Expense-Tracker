@@ -2,10 +2,10 @@
 
 ### Introduction
 The application's concept is to track a person's monthly spending. 
-  - The expense in this application is categorised into 2 types.
+  - This application's expenses are classified into two groups -
     - Nice to have expense
     - Must have expense
-  - This application has enough intelligence to advise you to quit spending money on "nice-to-have" items.
+  - This application is intelligent enough to advise you to stop spending money on "nice-to-have" products when it hits the threshold of budget<5000.
 
 ### Components
 - Backend
@@ -48,5 +48,5 @@ The application's concept is to track a person's monthly spending.
 
 ### Future work
 - We can include notification assistance, in which the programme delivers the notification to the user by email or other ways.
-- We can also add smartness for suggestions based on the budget and also add some checklist for both nice-to-have and must-have expenses.
-- We can also add the suggestions based on the progressions of the date of the month considering the left over budget. 
+- We may also include smartness for budget-based suggestions and a checklist for both nice-to-have and must-have charges.
+- We can also provide ideas based on the evolution of the month's dates while keeping the leftover funds in mind.
